@@ -1,14 +1,13 @@
 package io.vertx.examples.tweetfilter;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.vertx.core.Future;
-import io.vertx.core.file.OpenOptions;
-import io.vertx.reactivex.FlowableHelper;
 import io.vertx.reactivex.core.AbstractVerticle;
-import io.vertx.reactivex.core.buffer.Buffer;
-import io.vertx.reactivex.core.file.AsyncFile;
 import io.vertx.reactivex.core.file.FileSystem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Thanks to @medal.tv
@@ -18,26 +17,22 @@ import io.vertx.reactivex.core.file.FileSystem;
  */
 public class MainVerticle extends AbstractVerticle {
 
+
   @Override
   public void start(Future<Void> startFuture) throws Exception {
 
     FileSystem fileSystem = vertx.fileSystem();
+
+    Single<String> words =
     fileSystem
       .rxReadFile("Word_Filter-Sheet1.csv")
-      .toFlowable()
-      .flatMap(buffer -> Flowable.fromArray(buffer.toString().replace(",", "")))
-      .forEach(System.out::println);
-/*
-    fileSystem.open("Word_Filter-Sheet1.csv", new OpenOptions(), result -> {
-      AsyncFile file = result.result();
-      Flowable<Buffer> flowable = file.toFlowable();
-      flowable
-        .flatMap(w -> )
-        .forEach(System.out::println);
-    });
-*/
-    startFuture.complete();
+      .map(buffer -> buffer.toString());
 
+    words.contains("ass").subscribe(onNext -> {
+      System.out.println("match");
+    });
+
+    startFuture.complete();
   }
 
 }
