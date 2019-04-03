@@ -26,11 +26,13 @@ public class MainVerticle extends AbstractVerticle {
     Single<String> words =
     fileSystem
       .rxReadFile("Word_Filter-Sheet1.csv")
-      .map(buffer -> buffer.toString());
+      .map(buffer -> buffer.toString().replace(",",""));
 
     words.contains("ass").subscribe(onNext -> {
       System.out.println("match");
     });
+
+    words.toFlowable().forEach(word -> System.out.println(word));
 
     startFuture.complete();
   }
