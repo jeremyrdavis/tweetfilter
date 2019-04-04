@@ -30,7 +30,7 @@ public class MainVerticle extends AbstractVerticle {
 
   Observable prohibitedWords;
 
-  List<String> badWords;
+  ArrayList<String> badWords;
 
   @Override
   public void start(Future<Void> startFuture) throws Exception {
@@ -42,7 +42,7 @@ public class MainVerticle extends AbstractVerticle {
       AsyncFile file = res.result();
       Observable<Buffer> observable = file.toObservable();
       observable.forEach(data -> {
-        String[] splitData = data.toString().split(",");
+        String[] splitData = data.toString().replace("\n", "").split(",");
 //        System.out.println("Read data: " + data.toString("UTF-8"));
         badWords.addAll(Arrays.asList(splitData));
       });
@@ -52,7 +52,7 @@ public class MainVerticle extends AbstractVerticle {
     prohibitedWords = Observable.fromArray(fileSystem.rxReadFile("Word_Filter-Sheet1.csv")
                         .map(buffer -> buffer.toString().replace(",","").split(" "))
                         .toObservable());
-    prohibitedWords.subscribe();
+    prohibitedWords.subscribe(badWords::add);
 */
 
     Router baseRouter = Router.router(vertx);

@@ -39,32 +39,4 @@ public class TestMainVerticle {
     }));
   }
 
-  @Timeout(value = 2, timeUnit = TimeUnit.SECONDS)
-  @Test
-  @DisplayName("Should return all clear")
-  public void testThatWordIsCaught(Vertx vertx, VertxTestContext tc) {
-
-    WebClient webClient = WebClient.create(vertx);
-    Checkpoint deploymentCheckpoint = tc.checkpoint();
-    Checkpoint requestCheckpoint = tc.checkpoint();
-
-    vertx.deployVerticle(new MainVerticle(), tc.succeeding(id -> {
-
-      deploymentCheckpoint.flag();
-
-      webClient.post(8081, "localhost", "/api/censor")
-        .as(BodyCodec.string())
-        .sendJsonObject(new JsonObject().put("text", "cats are ass"), tc.succeeding(resp -> {
-          tc.verify(() -> {
-            assertThat(resp.statusCode()).isEqualTo(200);
-            assertThat(resp.body()).isNotEmpty();
-            assertThat(resp.body()).contains("Tweetfilter all clear!");
-            requestCheckpoint.flag();
-          });
-        }));
-    }));
-
-  }
-
-
 }
